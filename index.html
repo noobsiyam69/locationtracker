@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Location Demo</title>
+</head>
+<body>
+  <h2>My Location</h2>
+  <button onclick="getLocation()">Get Location</button>
+
+  <p id="out"></p>
+
+  <script>
+    function getLocation() {
+      if (!navigator.geolocation) {
+        document.getElementById("out").innerText =
+          "Geolocation is not supported.";
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        function(pos) {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+
+          document.getElementById("out").innerHTML =
+            "Latitude: " + lat + "<br>" +
+            "Longitude: " + lon + "<br><br>" +
+            "<a target='_blank' href='https://maps.google.com/?q=" +
+            lat + "," + lon + "'>Open in Google Maps</a>";
+        },
+        function(err) {
+          document.getElementById("out").innerText =
+            "Permission denied or location unavailable.";
+        }
+      );
+    }
+  </script>
+</body>
+</html>
